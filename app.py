@@ -13,7 +13,7 @@ from main import (
 
 st.set_page_config(
     page_title="Advance RAG Studio",
-    page_icon="🤖",
+    page_icon="AI",
     layout="wide",
 )
 
@@ -22,23 +22,31 @@ def apply_custom_css(theme_mode: str) -> None:
     is_dark = theme_mode.lower() == "dark"
 
     if is_dark:
-        bg_a = "#0b1220"
-        bg_b = "#0f1a17"
-        ink = "#e7ecff"
-        ink_soft = "#9aa7c7"
-        line = "rgba(156, 172, 214, 0.2)"
-        panel = "rgba(18, 27, 48, 0.72)"
-        side_bg = "rgba(12, 18, 33, 0.7)"
-        shadow = "0 10px 35px rgba(0, 0, 0, 0.45)"
+        bg_a = "#0e1728"
+        bg_b = "#132033"
+        ink = "#e8eef8"
+        ink_soft = "#aebbd3"
+        line = "rgba(170, 186, 215, 0.2)"
+        panel = "rgba(20, 32, 53, 0.86)"
+        side_bg = "linear-gradient(180deg, #13233a 0%, #101d31 100%)"
+        shadow = "0 12px 34px rgba(3, 10, 22, 0.5)"
+        field_bg = "rgba(16, 29, 49, 0.84)"
+        field_border = "1px solid rgba(155, 176, 211, 0.26)"
+        btn_bg = "linear-gradient(180deg, #2f5f97 0%, #274e7e 100%)"
+        btn_text = "#f1f5fb"
     else:
-        bg_a = "#eef4ff"
-        bg_b = "#f8fff1"
-        ink = "#15182b"
-        ink_soft = "#58607a"
-        line = "rgba(30, 37, 72, 0.12)"
-        panel = "rgba(255, 255, 255, 0.72)"
-        side_bg = "rgba(255, 255, 255, 0.65)"
-        shadow = "0 8px 30px rgba(17, 24, 39, 0.06)"
+        bg_a = "#edf2f8"
+        bg_b = "#e3eaf3"
+        ink = "#1a2636"
+        ink_soft = "#5c6f87"
+        line = "rgba(41, 59, 89, 0.16)"
+        panel = "rgba(255, 255, 255, 0.9)"
+        side_bg = "linear-gradient(180deg, #d6e0ee 0%, #cfdbea 100%)"
+        shadow = "0 10px 30px rgba(20, 30, 50, 0.11)"
+        field_bg = "rgba(255, 255, 255, 0.88)"
+        field_border = "1px solid rgba(52, 79, 120, 0.22)"
+        btn_bg = "linear-gradient(180deg, #345f92 0%, #2d527f 100%)"
+        btn_text = "#f5f8fc"
 
     st.markdown(
         f"""
@@ -51,19 +59,23 @@ def apply_custom_css(theme_mode: str) -> None:
             --ink: {ink};
             --ink-soft: {ink_soft};
             --line: {line};
-            --accent: #0f9d8f;
-            --accent-2: #2979ff;
+            --accent: #1b7c7a;
+            --accent-2: #345f92;
             --panel: {panel};
             --side-bg: {side_bg};
             --shadow: {shadow};
+            --field-bg: {field_bg};
+            --field-border: {field_border};
+            --btn-bg: {btn_bg};
+            --btn-text: {btn_text};
         }}
 
         .stApp {{
             font-family: 'Space Grotesk', sans-serif;
             color: var(--ink);
             background:
-                radial-gradient(circle at 10% 10%, rgba(41, 121, 255, 0.14), transparent 35%),
-                radial-gradient(circle at 90% 10%, rgba(15, 157, 143, 0.14), transparent 35%),
+                radial-gradient(circle at 94% 10%, rgba(52, 95, 146, 0.14), transparent 34%),
+                radial-gradient(circle at 14% 88%, rgba(40, 80, 130, 0.08), transparent 40%),
                 linear-gradient(135deg, var(--bg-a), var(--bg-b));
             transition: background 0.25s ease;
         }}
@@ -71,7 +83,37 @@ def apply_custom_css(theme_mode: str) -> None:
         section[data-testid="stSidebar"] {{
             border-right: 1px solid var(--line);
             background: var(--side-bg);
-            backdrop-filter: blur(10px);
+        }}
+
+        section[data-testid="stSidebar"] > div {{
+            background: transparent;
+        }}
+
+        section[data-testid="stSidebar"] [data-testid="stMarkdownContainer"] p,
+        section[data-testid="stSidebar"] label,
+        section[data-testid="stSidebar"] .st-emotion-cache-10trblm {{
+            color: var(--ink);
+        }}
+
+        section[data-testid="stSidebar"] .stTextInput input,
+        section[data-testid="stSidebar"] .stSelectbox div[data-baseweb="select"] > div,
+        section[data-testid="stSidebar"] .stSlider,
+        section[data-testid="stSidebar"] .stFileUploader {{
+            background: var(--field-bg);
+            border: var(--field-border);
+            border-radius: 10px;
+        }}
+
+        section[data-testid="stSidebar"] .stButton > button {{
+            border: var(--field-border);
+            border-radius: 10px;
+            font-weight: 600;
+            background: var(--btn-bg);
+            color: var(--btn-text);
+        }}
+
+        section[data-testid="stSidebar"] .stButton > button:hover {{
+            filter: brightness(1.05);
         }}
 
         .hero {{
@@ -98,7 +140,7 @@ def apply_custom_css(theme_mode: str) -> None:
 
         .status-grid {{
             display: grid;
-            grid-template-columns: repeat(4, minmax(0, 1fr));
+            grid-template-columns: repeat(3, minmax(0, 1fr));
             gap: 10px;
             margin: 10px 0 18px;
         }}
@@ -121,48 +163,6 @@ def apply_custom_css(theme_mode: str) -> None:
         .status-value {{
             font-family: 'IBM Plex Mono', monospace;
             font-size: 1.02rem;
-            font-weight: 500;
-        }}
-
-        .workflow {{
-            margin: 6px 0 14px;
-            color: var(--ink-soft);
-            font-size: 0.92rem;
-        }}
-
-        .chip {{
-            display: inline-block;
-            border: 1px solid var(--line);
-            border-radius: 999px;
-            padding: 3px 10px;
-            margin-right: 6px;
-            margin-bottom: 6px;
-            background: var(--panel);
-        }}
-
-        .panel-note {{
-            border: 1px solid var(--line);
-            border-radius: 14px;
-            background: var(--panel);
-            padding: 12px 14px;
-            margin: 8px 0 14px;
-        }}
-
-        .panel-note strong {{
-            display: block;
-            margin-bottom: 4px;
-        }}
-
-        div[data-testid="stChatMessage"] {{
-            border: 1px solid var(--line);
-            border-radius: 14px;
-            padding: 4px 4px 2px;
-            background: var(--panel);
-        }}
-
-        div[data-testid="stButton"] > button {{
-            border-radius: 10px;
-            border: 1px solid var(--line);
             font-weight: 500;
         }}
 
@@ -207,7 +207,6 @@ def render_header(engine: AdvanceRAG | None) -> None:
     image_count = sum(1 for chunk in engine.chunks if chunk.modality == "image") if engine else 0
     source_count = len({chunk.source for chunk in engine.chunks}) if engine else 0
     index_state = "Ready" if engine and engine.is_ready else "Not Ready"
-    chat_turns = len(st.session_state.get("chat_history", []))
 
     st.markdown(
         """
@@ -234,123 +233,87 @@ def render_header(engine: AdvanceRAG | None) -> None:
                 <div class="status-label">Index</div>
                 <div class="status-value">{index_state}</div>
             </div>
-            <div class="status-card">
-                <div class="status-label">Messages</div>
-                <div class="status-value">{chat_turns}</div>
-            </div>
         </div>
         """,
         unsafe_allow_html=True,
     )
     st.caption(f"Text chunks: {text_count} - Image chunks: {image_count}")
-    st.markdown(
-        """
-        <div class="workflow">
-            <span class="chip">1. Add API keys</span>
-            <span class="chip">2. Upload files</span>
-            <span class="chip">3. Build index</span>
-            <span class="chip">4. Ask grounded questions</span>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-
-
-def render_quick_prompts() -> str | None:
-    st.caption("Quick prompts")
-    prompt_options = [
-        "Summarize the uploaded knowledge base in 5 bullets.",
-        "List the key entities and terms from the indexed files.",
-        "What evidence supports the main conclusion?",
-    ]
-    selected_prompt = None
-    cols = st.columns(3)
-    for idx, prompt in enumerate(prompt_options):
-        with cols[idx]:
-            if st.button(prompt, key=f"quick_prompt_{idx}", use_container_width=True):
-                selected_prompt = prompt
-    return selected_prompt
 
 
 def main() -> None:
     if "chat_history" not in st.session_state:
         st.session_state.chat_history = []
-    if "theme_dark" not in st.session_state:
-        st.session_state.theme_dark = False
+    if "theme_mode" not in st.session_state:
+        st.session_state.theme_mode = "Light"
 
     audio_ok, audio_status = is_audio_transcription_available()
 
     with st.sidebar:
-        st.subheader("Workspace Settings")
-        st.session_state.theme_dark = st.toggle(
+        st.subheader("Engine")
+        st.session_state.theme_mode = st.toggle(
             "Dark Theme",
-            value=st.session_state.theme_dark,
+            value=st.session_state.theme_mode == "Dark",
         )
-        theme_mode = "Dark" if st.session_state.theme_dark else "Light"
+        theme_mode = "Dark" if st.session_state.theme_mode else "Light"
 
-        with st.expander("API Keys", expanded=True):
-            default_groq_key = st.secrets.get("GROQ_API_KEY", "") if hasattr(st, "secrets") else ""
-            groq_api_key = st.text_input(
-                "GROQ API Key",
-                type="password",
-                value=default_groq_key,
-                help="Used for this session only. In deployment, prefer Streamlit secrets.",
-            )
-            default_jina_key = st.secrets.get("JINA_API_KEY", "") if hasattr(st, "secrets") else ""
-            jina_api_key = st.text_input(
-                "Jina API Key",
-                type="password",
-                value=default_jina_key,
-                help="Required for embeddings. In deployment, prefer Streamlit secrets.",
-            )
-
-        st.divider()
-        with st.expander("Model Settings", expanded=False):
-            model = st.selectbox("Model", ["llama-3.1-8b-instant", "llama-3.3-70b-versatile", "mixtral-8x7b-32768"], index=0)
-            vision_model = "meta-llama/llama-4-scout-17b-16e-instruct"
-            st.caption(f"Vision model: {vision_model}")
-            rerank_model = st.selectbox(
-                "Reranker",
-                ["cross-encoder/ms-marco-MiniLM-L-6-v2", "cross-encoder/ms-marco-MiniLM-L-12-v2"],
-                index=0,
-            )
-            chunk_size = st.slider("Chunk Size (words)", min_value=120, max_value=900, value=400, step=20)
-            top_k = st.slider("Top K Retrieval", min_value=1, max_value=8, value=3, step=1)
-            candidate_k = st.slider("Candidate K (before rerank)", min_value=3, max_value=20, value=8, step=1)
-            use_rerank = st.toggle("Use Cross-Encoder Rerank", value=True)
-            modality_filter = st.selectbox("Retrieve", ["both", "text", "image"], index=0)
-            use_vision = st.toggle("Use Vision for Image Q&A", value=True)
-            memory_turns = st.slider("Memory Turns", min_value=0, max_value=8, value=4, step=1)
+        st.subheader("API Keys")
+        default_groq_key = st.secrets.get("GROQ_API_KEY", "") if hasattr(st, "secrets") else ""
+        groq_api_key = st.text_input(
+            "GROQ API Key",
+            type="password",
+            value=default_groq_key,
+            help="Used in this session. Prefer Streamlit secrets in deployment.",
+        )
+        default_jina_key = st.secrets.get("JINA_API_KEY", "") if hasattr(st, "secrets") else ""
+        jina_api_key = st.text_input(
+            "Jina API Key",
+            type="password",
+            value=default_jina_key,
+            help="Used for embeddings. Prefer Streamlit secrets in deployment.",
+        )
 
         st.divider()
-        with st.expander("Knowledge Files", expanded=True):
-            uploads = st.file_uploader(
-                "Upload one or more source files",
-                type=[
-                    "txt",
-                    "md",
-                    "pdf",
-                    "wav",
-                    "mp3",
-                    "mp4",
-                    "m4a",
-                    "flac",
-                    "ogg",
-                    "png",
-                    "jpg",
-                    "jpeg",
-                    "webp",
-                ],
-                accept_multiple_files=True,
-            )
-            uploaded_count = len(uploads) if uploads else 0
-            st.caption(f"Selected files: {uploaded_count}")
-            st.caption("Supported inputs: text, PDF, audio, and image files.")
-            process_files = st.button("Process + Build Index", use_container_width=True, type="primary")
-            clear_kb = st.button("Clear Knowledge Base", use_container_width=True)
+        st.subheader("Models")
+        model = st.selectbox("Model", ["llama-3.1-8b-instant", "llama-3.3-70b-versatile", "mixtral-8x7b-32768"], index=0)
+        vision_model = "meta-llama/llama-4-scout-17b-16e-instruct"
+        st.caption(f"Vision model: {vision_model}")
+        rerank_model = st.selectbox(
+            "Reranker",
+            ["cross-encoder/ms-marco-MiniLM-L-6-v2", "cross-encoder/ms-marco-MiniLM-L-12-v2"],
+            index=0,
+        )
+        chunk_size = st.slider("Chunk Size (words)", min_value=120, max_value=900, value=400, step=20)
+        top_k = st.slider("Top K Retrieval", min_value=1, max_value=8, value=3, step=1)
+        candidate_k = st.slider("Candidate K (before rerank)", min_value=3, max_value=20, value=8, step=1)
+        use_rerank = st.toggle("Use Cross-Encoder Rerank", value=True)
+        modality_filter = st.selectbox("Retrieve", ["both", "text", "image"], index=0)
+        use_vision = st.toggle("Use Vision for Image Q&A", value=True)
+        memory_turns = st.slider("Memory Turns", min_value=0, max_value=8, value=4, step=1)
 
         st.divider()
-        st.caption("Tip: Keep `top_k` low for faster, more focused responses.")
+        st.subheader("Knowledge Files")
+        uploads = st.file_uploader(
+            "Upload one or more files",
+            type=[
+                "txt",
+                "md",
+                "pdf",
+                "wav",
+                "mp3",
+                "mp4",
+                "m4a",
+                "flac",
+                "ogg",
+                "png",
+                "jpg",
+                "jpeg",
+                "webp",
+            ],
+            accept_multiple_files=True,
+        )
+
+        process_files = st.button("Process + Build Index", use_container_width=True, type="primary")
+        clear_kb = st.button("Clear Knowledge Base", use_container_width=True)
 
     apply_custom_css(theme_mode)
 
@@ -373,16 +336,16 @@ def main() -> None:
     if clear_kb and engine:
         engine.reset()
         st.session_state.chat_history = []
-        st.success("Knowledge base cleared successfully.")
+        st.success("Knowledge base cleared.")
 
     render_header(engine)
 
     if not audio_ok:
-        st.caption(f"Audio status: {audio_status} Audio files will be skipped.")
+        st.caption(f"Audio note: {audio_status} Audio files will be skipped.")
 
     if process_files:
         if not groq_api_key or not jina_api_key:
-            st.warning("Provide both GROQ and Jina API keys before processing files.")
+            st.warning("Add both GROQ and Jina API keys before processing files.")
         elif not uploads:
             st.warning("Upload at least one file first.")
         else:
@@ -414,65 +377,30 @@ def main() -> None:
 
                 if engine.chunks:
                     engine.build_index()
-                    st.success(f"Index built successfully. Added {added} chunks from {len(uploads)} file(s).")
+                    st.success(f"Indexed successfully. Added {added} chunks from {len(uploads)} file(s).")
                 else:
                     st.warning("No usable text found in the uploaded files.")
 
-    col_chat, col_side = st.columns([2.2, 1], gap="large")
-    selected_prompt = None
+    st.subheader("Chat")
 
-    with col_chat:
-        st.subheader("Chat")
-        if not groq_api_key or not jina_api_key:
-            st.markdown(
-                """
-                <div class="panel-note">
-                    <strong>Connect API keys to begin.</strong>
-                    Add your GROQ and Jina keys in the sidebar, then upload files and build an index.
-                </div>
-                """,
-                unsafe_allow_html=True,
-            )
-        elif not engine or not engine.is_ready:
-            st.markdown(
-                """
-                <div class="panel-note">
-                    <strong>Index not ready.</strong>
-                    Upload documents from the sidebar and click <em>Process + Build Index</em>.
-                </div>
-                """,
-                unsafe_allow_html=True,
-            )
-        else:
-            selected_prompt = render_quick_prompts()
+    if not groq_api_key or not jina_api_key:
+        st.info("Enter your GROQ + Jina API keys in the sidebar to start.")
 
-        for message in st.session_state.chat_history:
-            with st.chat_message(message["role"]):
-                st.markdown(message["content"])
-                if message.get("context"):
-                    with st.expander("Retrieved Context"):
-                        for idx, ctx in enumerate(message["context"], start=1):
-                            st.caption(f"Chunk {idx} - {ctx.get('modality', 'text')} - {ctx.get('source', 'source')}")
-                            st.write(ctx.get("text", ""))
-                            if ctx.get("modality") == "image" and ctx.get("meta", {}).get("image_b64"):
-                                st.image(ctx["meta"]["image_b64"], caption=ctx.get("meta", {}).get("image", ""))
-
-    with col_side:
-        st.subheader("Session")
-        st.metric("Messages", len(st.session_state.chat_history))
-        st.metric("Memory Turns", memory_turns)
-        st.metric("Retrieval", modality_filter.upper())
-        if engine and engine.chunks:
-            st.caption("Indexed Sources")
-            for source in sorted({chunk.source for chunk in engine.chunks})[:8]:
-                st.write(f"- {source}")
+    for message in st.session_state.chat_history:
+        with st.chat_message(message["role"]):
+            st.markdown(message["content"])
+            if message.get("context"):
+                with st.expander("Retrieved Context"):
+                    for idx, ctx in enumerate(message["context"], start=1):
+                        st.caption(f"Chunk {idx} - {ctx.get('modality', 'text')} - {ctx.get('source', 'source')}")
+                        st.write(ctx.get("text", ""))
+                        if ctx.get("modality") == "image" and ctx.get("meta", {}).get("image_b64"):
+                            st.image(ctx["meta"]["image_b64"], caption=ctx.get("meta", {}).get("image", ""))
 
     user_query = st.chat_input("Ask a question about your uploaded knowledge base...")
-    if selected_prompt and not user_query:
-        user_query = selected_prompt
     if user_query:
         if not engine or not engine.is_ready:
-            st.warning("Process files first so the FAISS index is available.")
+            st.warning("Process files first so the FAISS index is ready.")
             return
 
         st.session_state.chat_history.append({"role": "user", "content": user_query})
@@ -480,7 +408,7 @@ def main() -> None:
             st.markdown(user_query)
 
         with st.chat_message("assistant"):
-            with st.spinner("Generating response from retrieved context..."):
+            with st.spinner("Generating grounded answer..."):
                 try:
                     candidate_k = max(candidate_k, top_k)
                     memory = []
