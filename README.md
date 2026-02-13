@@ -1,84 +1,99 @@
 # Advance RAG Studio
 
-A modern Retrieval-Augmented Generation (RAG) app built from your notebook workflow.
+Advance RAG Studio is a production-style, multimodal Retrieval-Augmented Generation (RAG) application built with Streamlit. It supports document ingestion, vector search, reranking, and grounded chat over text, audio transcripts, and image-derived context.
 
-## What You Get
+## Highlights
 
-- `main.py`: reusable backend engine for ingestion, chunking, indexing, retrieval, and answer generation
-- `app.py`: modern Streamlit UI with polished styling, chat layout, and live system status cards
-- `requirements.txt`: project dependencies
+- Multimodal ingestion: `.txt`, `.md`, `.pdf`, `.wav`, `.mp3`, `.mp4`, `.m4a`, `.flac`, `.ogg`, `.png`, `.jpg`, `.jpeg`, `.webp`
+- Audio transcription with Whisper (when `ffmpeg` is available)
+- Image captioning and image-aware retrieval using a Groq-compatible vision model
+- Embeddings powered by Jina Embeddings v4
+- FAISS vector index for low-latency semantic retrieval
+- Optional cross-encoder reranking for higher retrieval precision
+- Grounded-answer policy (answers are restricted to retrieved context)
+- Session memory, source visibility, and latency breakdown in the UI
 
-## Features
+## Architecture
 
-- Ingest files: `.txt`, `.md`, `.pdf`, `.wav`, `.mp3`, `.mp4`, `.m4a`, `.flac`, `.ogg`, `.png`, `.jpg`, `.jpeg`, `.webp`
-- Audio transcription via Whisper
-- Text chunking by words
-- Multimodal RAG with image captions (Groq vision model)
-- Embeddings via Jina Embeddings v4 API
-- Vector search with FAISS
-- Cross-encoder reranking for improved relevance
-- Guardrails for context-only answers
-- Session memory and latency tracking in the UI
-- Optional vision-at-answer for image Q&A plus image previews in context
-- Metadata filtering (text-only / image-only / both)
+- `main.py`: core RAG engine (ingestion, chunking, embedding, indexing, retrieval, reranking, generation)
+- `app.py`: Streamlit interface (workflow controls, chat, diagnostics, visual styling)
+- `requirements.txt`: Python dependencies
+- `runtime.txt`: Python runtime pin for cloud compatibility
 
-## Setup
+## Quick Start
+
+### 1. Create and activate a virtual environment
+
+Windows (PowerShell):
 
 ```bash
 python -m venv .venv
-.venv\Scripts\activate
+.venv\Scripts\Activate.ps1
+```
+
+macOS/Linux:
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+```
+
+### 2. Install dependencies
+
+```bash
 pip install -r requirements.txt
 ```
 
-Set your API keys:
+### 3. Configure API keys
+
+Windows (PowerShell):
 
 ```bash
-set GROQ_API_KEY=your_groq_api_key_here
-set JINA_API_KEY=your_jina_api_key_here
+$env:GROQ_API_KEY="your_groq_api_key_here"
+$env:JINA_API_KEY="your_jina_api_key_here"
 ```
 
-Or provide them in the Streamlit sidebar at runtime.
+macOS/Linux:
 
-## Run UI
+```bash
+export GROQ_API_KEY="your_groq_api_key_here"
+export JINA_API_KEY="your_jina_api_key_here"
+```
+
+You can also provide both keys in the Streamlit sidebar at runtime.
+
+### 4. Run the application
 
 ```bash
 streamlit run app.py
 ```
 
-## Project Structure
-
-```text
-Advance_RAG/
-  app.py
-  main.py
-  requirements.txt
-  README.md
-  Advance_RAG(11_02_2026).ipynb
-```
-
-## Backend Usage (Optional)
+## Example Backend Usage
 
 ```python
 from main import AdvanceRAG
 
-rag = AdvanceRAG(groq_api_key="your_key")
+rag = AdvanceRAG(groq_api_key="your_groq_api_key", jina_api_key="your_jina_api_key")
 rag.ingest_txt_bytes(open("notes.txt", "rb").read(), source="notes.txt")
 rag.build_index()
-print(rag.answer("Summarize the key topics"))
+
+response = rag.answer("Summarize the key topics.")
+print(response["answer"])
 ```
 
-## Notes
+## Operational Notes
 
 - Do not hardcode API keys in source files.
-- First run of Whisper may download model weights, so audio transcription can take longer.
-- For large files, prefer smaller `top_k` and tune `chunk_size` from the UI sidebar.
-- Cross-encoder reranking uses `sentence-transformers` and can add startup latency on first load.
+- First-time Whisper usage may trigger model downloads and increase startup time.
+- If `ffmpeg` is unavailable, audio files are skipped and the app remains functional.
+- Reranking improves answer quality but adds latency on first model load.
+- For larger corpora, tune `chunk_size`, `top_k`, and `candidate_k` for speed/quality tradeoffs.
 
-## Streamlit Cloud Deployment
+## Deploy on Streamlit Community Cloud
 
-1. Push this repo to GitHub.
-2. In Streamlit Cloud, set `app.py` as the entrypoint.
-3. Add secret in app settings:
+1. Push this repository to GitHub.
+2. Create a new Streamlit app and set `app.py` as the entrypoint.
+3. Add secrets in the app settings:
 
 ```toml
 GROQ_API_KEY = "your_groq_api_key_here"
@@ -87,7 +102,5 @@ JINA_API_KEY = "your_jina_api_key_here"
 
 4. Deploy.
 
-Notes:
-- `runtime.txt` pins Python for better binary wheel compatibility on Streamlit Cloud.
-- Audio transcription needs both `openai-whisper` and `ffmpeg`; if unavailable, the app still runs and skips audio files.
+`runtime.txt` pins Python to improve package wheel compatibility in cloud environments.
 
