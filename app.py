@@ -13,7 +13,7 @@ from main import (
 
 st.set_page_config(
     page_title="Advance RAG Studio",
-    page_icon="AI",
+    page_icon="🤖",
     layout="wide",
 )
 
@@ -275,18 +275,18 @@ def render_quick_prompts() -> str | None:
 def main() -> None:
     if "chat_history" not in st.session_state:
         st.session_state.chat_history = []
-    if "theme_mode" not in st.session_state:
-        st.session_state.theme_mode = "Light"
+    if "theme_dark" not in st.session_state:
+        st.session_state.theme_dark = False
 
     audio_ok, audio_status = is_audio_transcription_available()
 
     with st.sidebar:
-        st.subheader("Studio Controls")
-        st.session_state.theme_mode = st.toggle(
+        st.subheader("Workspace Settings")
+        st.session_state.theme_dark = st.toggle(
             "Dark Theme",
-            value=st.session_state.theme_mode == "Dark",
+            value=st.session_state.theme_dark,
         )
-        theme_mode = "Dark" if st.session_state.theme_mode else "Light"
+        theme_mode = "Dark" if st.session_state.theme_dark else "Light"
 
         with st.expander("API Keys", expanded=True):
             default_groq_key = st.secrets.get("GROQ_API_KEY", "") if hasattr(st, "secrets") else ""
@@ -294,14 +294,14 @@ def main() -> None:
                 "GROQ API Key",
                 type="password",
                 value=default_groq_key,
-                help="Used in this session. Prefer Streamlit secrets in deployment.",
+                help="Used for this session only. In deployment, prefer Streamlit secrets.",
             )
             default_jina_key = st.secrets.get("JINA_API_KEY", "") if hasattr(st, "secrets") else ""
             jina_api_key = st.text_input(
                 "Jina API Key",
                 type="password",
                 value=default_jina_key,
-                help="Used for embeddings. Prefer Streamlit secrets in deployment.",
+                help="Required for embeddings. In deployment, prefer Streamlit secrets.",
             )
 
         st.divider()
@@ -325,7 +325,7 @@ def main() -> None:
         st.divider()
         with st.expander("Knowledge Files", expanded=True):
             uploads = st.file_uploader(
-                "Upload one or more files",
+                "Upload one or more source files",
                 type=[
                     "txt",
                     "md",
@@ -345,12 +345,12 @@ def main() -> None:
             )
             uploaded_count = len(uploads) if uploads else 0
             st.caption(f"Selected files: {uploaded_count}")
-            st.caption("Supported: text, PDF, audio, and image files.")
+            st.caption("Supported inputs: text, PDF, audio, and image files.")
             process_files = st.button("Process + Build Index", use_container_width=True, type="primary")
             clear_kb = st.button("Clear Knowledge Base", use_container_width=True)
 
         st.divider()
-        st.caption("Tip: Keep `top_k` low for faster, tighter answers.")
+        st.caption("Tip: Keep `top_k` low for faster, more focused responses.")
 
     apply_custom_css(theme_mode)
 
@@ -373,16 +373,16 @@ def main() -> None:
     if clear_kb and engine:
         engine.reset()
         st.session_state.chat_history = []
-        st.success("Knowledge base cleared.")
+        st.success("Knowledge base cleared successfully.")
 
     render_header(engine)
 
     if not audio_ok:
-        st.caption(f"Audio note: {audio_status} Audio files will be skipped.")
+        st.caption(f"Audio status: {audio_status} Audio files will be skipped.")
 
     if process_files:
         if not groq_api_key or not jina_api_key:
-            st.warning("Add both GROQ and Jina API keys before processing files.")
+            st.warning("Provide both GROQ and Jina API keys before processing files.")
         elif not uploads:
             st.warning("Upload at least one file first.")
         else:
@@ -414,7 +414,7 @@ def main() -> None:
 
                 if engine.chunks:
                     engine.build_index()
-                    st.success(f"Indexed successfully. Added {added} chunks from {len(uploads)} file(s).")
+                    st.success(f"Index built successfully. Added {added} chunks from {len(uploads)} file(s).")
                 else:
                     st.warning("No usable text found in the uploaded files.")
 
@@ -428,7 +428,7 @@ def main() -> None:
                 """
                 <div class="panel-note">
                     <strong>Connect API keys to begin.</strong>
-                    Add your GROQ and Jina keys in the sidebar, then upload files and build the index.
+                    Add your GROQ and Jina keys in the sidebar, then upload files and build an index.
                 </div>
                 """,
                 unsafe_allow_html=True,
@@ -472,7 +472,7 @@ def main() -> None:
         user_query = selected_prompt
     if user_query:
         if not engine or not engine.is_ready:
-            st.warning("Process files first so the FAISS index is ready.")
+            st.warning("Process files first so the FAISS index is available.")
             return
 
         st.session_state.chat_history.append({"role": "user", "content": user_query})
@@ -480,7 +480,7 @@ def main() -> None:
             st.markdown(user_query)
 
         with st.chat_message("assistant"):
-            with st.spinner("Generating grounded answer..."):
+            with st.spinner("Generating response from retrieved context..."):
                 try:
                     candidate_k = max(candidate_k, top_k)
                     memory = []
